@@ -59,7 +59,22 @@ public class Traversals {
    * @return a list of node values in a top-to-bottom order, or an empty list if the tree is null
    */
   public static <T> List<T> collectLevelOrderValues(TreeNode<T> node) {
-    return null;
+    List<T> result = new ArrayList<>();
+    
+    Queue<TreeNode<T>> queue = new LinkedList<>();
+
+    queue.add(node);
+
+    while (!queue.isEmpty()){
+      TreeNode<T> current = queue.poll();
+
+      if (current == null) continue;
+
+      result.add(current.value);
+      queue.add(current.left);
+      queue.add(current.right);
+    }
+    return result;
   }
 
   /**
@@ -70,7 +85,17 @@ public class Traversals {
    * @return the number of unique values in the tree, or 0 if the tree is null
    */
   public static int countDistinctValues(TreeNode<Integer> node) {
-    return 0;
+    Set<Integer> unique = new HashSet<>();
+    countDistinctValues(node, unique);
+    return unique.size();
+  }
+
+  private static void countDistinctValues(TreeNode<Integer> node, Set<Integer> unique){
+    if (node == null) return;
+
+    unique.add(node.value);
+    countDistinctValues(node.left, unique);
+    countDistinctValues(node.right, unique);
   }
 
   /**
@@ -82,6 +107,26 @@ public class Traversals {
    * @return true if there exists a strictly increasing root-to-leaf path, false otherwise
    */
   public static boolean hasStrictlyIncreasingPath(TreeNode<Integer> node) {
+    if (node == null) return false;
+    if (node.left == null && node.right == null) return true;
+
+    return hasStrictlyIncreasingPathHelper(node);
+  }
+
+  private static boolean hasStrictlyIncreasingPathHelper(TreeNode<Integer> node){
+    if (node == null) return true;
+    if (node.left !=null){
+      if (node.left.value > node.value){
+        return true && (hasStrictlyIncreasingPathHelper(node.left) == true || hasStrictlyIncreasingPathHelper(node.right) == true);
+      }
+    }
+    
+    if (node.right != null){
+      if (node.right.value > node.value){
+        return true && (hasStrictlyIncreasingPathHelper(node.left) == true || hasStrictlyIncreasingPathHelper(node.right) == true);
+      }
+    }
+
     return false;
   }
 
@@ -97,7 +142,15 @@ public class Traversals {
    * @return true if the trees have the same shape, false otherwise
    */
   public static <T> boolean haveSameShape(TreeNode<T> nodeA, TreeNode<T> nodeB) {
-    return false;
+    if (nodeA == null && nodeB == null) return true;
+    if (nodeA == null || nodeB == null) return false;
+
+    if ((nodeA.left != null && nodeB.left == null) || (nodeA.right != null && nodeB.right == null)
+      || (nodeA.left == null && nodeB.left != null) || (nodeA.right == null && nodeB.right != null)){
+      return false;
+    }
+
+    return haveSameShape(nodeA.left, nodeB.left) && haveSameShape(nodeA.right, nodeB.right);
   }
 
 
